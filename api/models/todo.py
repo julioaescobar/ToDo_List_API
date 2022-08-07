@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
+
 class ToDo(BaseModel):
     name: str
-    description: str or None = None  
-
+    description: str or None = None

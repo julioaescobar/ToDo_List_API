@@ -1,10 +1,9 @@
-from dotenv import load_dotenv
-load_dotenv()
+import api.config
+from api.routers import todo, item
+from api.database import engine
+from api import schemas
 from fastapi import FastAPI
 
-from api import schemas
-from api.database import engine
-from api.routers import todo,item
 
 schemas.Base.metadata.create_all(bind=engine)
 
@@ -17,5 +16,3 @@ app = FastAPI(
 
 app.include_router(todo.router)
 app.include_router(item.router)
-
-
