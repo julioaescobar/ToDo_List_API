@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter, Response,  status
 
-from api.core import todo
+from api.core import todo as todo_core
 from api.database import get_db
 from api.models.todo import ToDo
 
@@ -10,26 +10,53 @@ router = APIRouter(
 )
 
 
-@router.get("", description="Devuelve todas las listas de tareas")
-def get_all_to_do(db: Session = Depends(get_db)):
-    return todo.get_all_to_do(db)
+@router.get("", description="Devuelve todas las listas de tareas", status_code=status.HTTP_200_OK)
+def get_all_to_do(response: Response, db: Session = Depends(get_db)):
+    try:
+        return todo_core.get_all_to_do(db)
+    except Exception as err:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        print(err)
 
 
-@router.get("/{todo_id}", description="Devuelve un to do list")
-def get_to_do(todo_id: int, db: Session = Depends(get_db)):
-    return todo.get_to_do_by_id(db, todo_id=todo_id)
+@router.get("/{todo_id}", description="Devuelve un to do list", status_code=status.HTTP_200_OK)
+def get_to_do(todo_id: int, response: Response, db: Session = Depends(get_db)):
+    try:
+        todo_to_return = todo_core.get_to_do_by_id(db, todo_id=todo_id)
+        if not (todo_to_return):
+            response.status_code = status.HTTP_404_NOT_FOUND
+        return todo_to_return
+    except Exception as err:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        print(err)
 
 
-@router.post("/", description="Crea un to do list")
-def create_to_do(todo: ToDo, db: Session = Depends(get_db)):
-    return todo.create_to_do(db, todo=todo)
+@router.post("/", description="Crea un to do list", status_code=status.HTTP_201_CREATED)
+def create_to_do(todo: ToDo, response: Response, db: Session = Depends(get_db)):
+    try:
+        return todo.create_to_do(db, todo=todo)
+    except Exception as err:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        print(err)
 
 
-@router.put("/{todo_id}", description="Actualiza un to do list")
-def update_to_do(todo: ToDo, todo_id: int, db: Session = Depends(get_db)):
-    return todo.update_to_do(db, todo_id, todo)
+@router.put("/{todo_id}", description="Actualiza un to do list", status_code=status.HTTP_200_OK)
+def update_to_do(todo: ToDo, response: Response, todo_id: int, db: Session = Depends(get_db)):
+    try:
+        if(todo_core.check_if_to_do_exist(db, todo_id)):
+            return todo_core.update_to_do(db, todo_id, todo)
+        response.status_code = status.HTTP_404_NOT_FOUND
+    except Exception as err:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        print(err)
 
 
-@router.delete("/{todo_id}", description="Elimina un to do list")
-def delete_to_do(todo_id: int, db: Session = Depends(get_db)):
-    return todo.delete_to_do(db, todo_id)
+@router.delete("/{todo_id}", description="Elimina un to do list", status_code=status.HTTP_200_OK)
+def delete_to_do(todo_id: int, response: Response, db: Session = Depends(get_db)):
+    try:
+        if(todo_core.check_if_to_do_exist(db, todo_id)):
+            return todo_core.delete_to_do(db, todo_id)
+        response.status_code = status.HTTP_404_NOT_FOUND
+    except Exception as err:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        print(err)
