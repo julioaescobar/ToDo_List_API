@@ -34,7 +34,7 @@ def get_to_do(todo_id: int, response: Response, db: Session = Depends(get_db)):
 @router.post("/", description="Crea un to do list", status_code=status.HTTP_201_CREATED)
 def create_to_do(todo: ToDo, response: Response, db: Session = Depends(get_db)):
     try:
-        return todo.create_to_do(db, todo=todo)
+        return todo_core.create_to_do(db, todo=todo)
     except Exception as err:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         print(err)
