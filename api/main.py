@@ -1,5 +1,5 @@
 import api.config
-from api.routers import todo, item,batch
+from api.routers import todo, item, batch, user
 from api.database import engine
 from api import schemas
 from fastapi import FastAPI
@@ -17,3 +17,4 @@ app = FastAPI(
 app.include_router(todo.router)
 app.include_router(item.router)
 app.include_router(batch.router)
+app.include_router(user.router)
