@@ -1,6 +1,5 @@
 from xmlrpc.client import Boolean
 from sqlalchemy.orm import Session
-
 from api.repositories import todo as todo_repository
 from api.models.todo import ToDo
 
