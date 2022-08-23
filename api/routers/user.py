@@ -28,9 +28,7 @@ async def read_users_me(db: Session = Depends(get_db), token: str = Depends(oaut
 
 
 @router.post("/token", response_model=Token)
-async def login_for_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
-    user = user_core.authenticate_user(
-        db, form_data.username, form_data.password)
+async def login_for_access_token(user = Depends(user_core.authenticate_user)):
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -2,9 +2,11 @@ from sqlalchemy.orm import Session
 from api.repositories import user as user_repository
 from api.models.user import CreateUser
 from api.security.security import verify_password, ALGORITHM, SECRET_KEY, get_password_hash
-from fastapi import status, HTTPException
+from fastapi import status, HTTPException,Depends
 from jose import jwt, JWTError
 from api.models.token import TokenData
+from fastapi.security import OAuth2PasswordRequestForm
+from api.database import get_db
 
 
 def check_if_user_exist(db: Session, username: str):
@@ -45,10 +47,10 @@ async def get_current_user(db: Session, token: str):
     return user
 
 
-def authenticate_user(db: Session, username: str, password: str):
-    user = user_repository.get_user_by_username(db, username)
+def authenticate_user(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
+    user = user_repository.get_user_by_username(db, form_data.username)
     if not user:
         return False
-    if not verify_password(password, user.user_password):
+    if not verify_password(form_data.password,user.user_password):
         return False
     return user
