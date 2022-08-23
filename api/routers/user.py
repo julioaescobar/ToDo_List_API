@@ -17,8 +17,7 @@ router = APIRouter(
 @router.post("/api/users/create", description="Crea un usuario", status_code=status.HTTP_201_CREATED)
 def create_user(user_to_create: CreateUser, 
                 response: Response, 
-                db: Session = Depends(get_db),
-                current_user = Depends(user_core.get_current_user)):
+                db: Session = Depends(get_db)):
     try:
         return user_core.create_user(db, user_to_create)
     except Exception as err:
