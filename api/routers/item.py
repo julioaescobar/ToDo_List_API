@@ -18,7 +18,7 @@ def get_all_items(todo_id: int,
                   db: Session = Depends(get_db),
                   current_user = Depends(user_core.get_current_user)):
     try:
-        return item_core.get_items_by_todo_id(db, todo_id)
+        return item_core.get_items_by_todo_id(db, todo_id,current_user.id)
     except Exception as err:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         print(err)
@@ -31,7 +31,7 @@ def get_items(todo_id: int,
               db: Session = Depends(get_db),
               current_user = Depends(user_core.get_current_user)):
     try:
-        item_to_return = item_core.get_item(db, todo_id, item_id)
+        item_to_return = item_core.get_item(db, todo_id, item_id,current_user.id)
         if not (item_to_return):
             response.status_code = status.HTTP_404_NOT_FOUND
         return item_to_return
@@ -47,7 +47,7 @@ def create_item(todo_id: int,
                 db: Session = Depends(get_db),
                 current_user = Depends(user_core.get_current_user)):
     try:
-        return item_core.create_item(db, todo_id, item_to_create)
+        return item_core.create_item(db, todo_id, item_to_create,current_user.id)
     except Exception as err:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         print(err)
@@ -61,8 +61,8 @@ def update_item(todo_id: int,
                 db: Session = Depends(get_db),
                 current_user = Depends(user_core.get_current_user)):
     try:
-        if(item_core.check_if_item_exist(db, todo_id, item_id)):
-            return item_core.update_item(db, todo_id, item_id, item_to_update)
+        if(item_core.check_if_item_exist(db, todo_id, item_id,current_user.id)):
+            return item_core.update_item(db, todo_id, item_id, item_to_update,current_user.id)
         response.status_code = status.HTTP_404_NOT_FOUND
     except Exception as err:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -76,8 +76,8 @@ def delete_item(todo_id: int,
                 db: Session = Depends(get_db),
                 current_user = Depends(user_core.get_current_user)):
     try:
-        if(item_core.check_if_item_exist(db, todo_id, item_id)):
-            return item_core.delete_item(db, todo_id, item_id)
+        if(item_core.check_if_item_exist(db, todo_id, item_id,current_user.id)):
+            return item_core.delete_item(db, todo_id, item_id,current_user.id)
         response.status_code = status.HTTP_404_NOT_FOUND
     except Exception as err:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR

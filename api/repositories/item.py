@@ -5,8 +5,7 @@ from api.models.item import Item
 
 def get_items_by_todo_id(db: Session, todo_id: int):
     try:
-        return db.query(schemas.Item).filter(
-            schemas.Item.todo_id == todo_id).all()
+        return db.query(schemas.Item).filter(schemas.Item.todo_id == todo_id).all()
     except Exception as err:
         raise err
 
@@ -52,6 +51,15 @@ def delete_item(db: Session, todo_id: int, item_id: int):
         db.query(schemas.Item).filter(
             schemas.Item.id == item_id,
             schemas.Item.todo_id == todo_id).delete(synchronize_session=False)
+        db.commit()
+    except Exception as err:
+        raise err
+
+def delete_items_by_todo_id(db:Session,todo_id:int):
+    try:
+        db.query(schemas.Item).filter(
+            schemas.Item.todo_id == todo_id
+        ).delete(synchronize_session=False)
         db.commit()
     except Exception as err:
         raise err

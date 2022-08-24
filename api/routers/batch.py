@@ -21,8 +21,8 @@ def create_item_for_todo_batch(response: Response,
                                current_user = Depends(user_core.get_current_user)):
     try:
         if(file.content_type == "text/csv"):
-            if(check_if_to_do_exist(db, todo_id)):
-                background_tasks.add_task(background_worker, file, db, todo_id)
+            if(check_if_to_do_exist(db, todo_id,current_user.id)):
+                background_tasks.add_task(background_worker, file, db, todo_id,current_user.id)
             else:
                 response.status_code = status.HTTP_404_NOT_FOUND
                 return {"message":  "todo_id not exist."}
@@ -35,10 +35,10 @@ def create_item_for_todo_batch(response: Response,
 
 
 
-def background_worker(file:  UploadFile,  db:  Session,  todo_id:  int):
+def background_worker(file:  UploadFile,  db:  Session,  todo_id:  int,current_user_id:int):
     try:
         tmp_path = save_temp_file(file)
-        batch_insert_items(db,  todo_id,  tmp_path)
+        batch_insert_items(db,  todo_id,  tmp_path,current_user_id)
         delete_temp_file(tmp_path)
     except Exception as err:
         raise err

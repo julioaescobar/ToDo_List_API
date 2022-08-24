@@ -7,3 +7,6 @@ class CreateUser(BaseModel):
     user_password: str
     email: Union[str, None] = None
     full_name: Union[str, None] = None
+
+class User(CreateUser):
+    id:int

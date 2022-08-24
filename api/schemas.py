@@ -8,10 +8,12 @@ class Todo(Base):
     __tablename__ = "todos"
 
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
     name = Column(String, unique=True, index=True)
     description = Column(String)
 
     items = relationship("Item", back_populates="todo")
+    user = relationship("User", back_populates="users")
 
 
 class Item(Base):
@@ -34,3 +36,5 @@ class User(Base):
     email = Column(String)
     full_name = Column(String)
     disabled = Column(Boolean)
+
+    users = relationship("Todo", back_populates="user")
